@@ -177,7 +177,8 @@
 
     /* ── Tab panels ── */
     .tab-panel { display: none; }
-    .tab-panel.active { display: flex; flex-direction: column; gap: 16px; }
+    .tab-panel.active { display: flex; flex-direction: column; gap: 28px; }
+    .tab-panel.active .main-header { margin-bottom: 0; }
 
     /* ── Form elements ── */
     .field-group {
@@ -236,12 +237,12 @@
     .checkbox-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px 24px;
+      gap: 14px 24px;
       margin-bottom: 14px;
     }
     .checkbox-item {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       gap: 8px;
       font-size: 14px;
       font-weight: 400;
@@ -253,6 +254,26 @@
       accent-color: var(--primary-70);
       cursor: pointer;
       flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .utm-label {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+    .utm-desc {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--neutral-100);
+      line-height: 1.4;
+    }
+    .utm-key {
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--neutral-90);
+      font-family: 'Courier New', monospace;
+      line-height: 1.3;
+      letter-spacing: 0.01em;
     }
     .custom-key-row {
       display: flex;
@@ -525,16 +546,76 @@
         <div>
           <p class="section-label">Allowed Prospect UTM Keys</p>
           <div class="checkbox-grid">
-            <label class="checkbox-item"><input type="checkbox" /> utm_source</label>
-            <label class="checkbox-item"><input type="checkbox" /> utm_medium</label>
-            <label class="checkbox-item"><input type="checkbox" /> utm_campaign</label>
-            <label class="checkbox-item"><input type="checkbox" /> utm_term</label>
-            <label class="checkbox-item"><input type="checkbox" /> utm_content</label>
-            <label class="checkbox-item"><input type="checkbox" /> utm_id</label>
-            <label class="checkbox-item"><input type="checkbox" /> landing_page_url</label>
-            <label class="checkbox-item"><input type="checkbox" /> referrer_url</label>
-            <label class="checkbox-item"><input type="checkbox" /> first_touch_at</label>
-            <label class="checkbox-item"><input type="checkbox" /> last_touch_at</label>
+            <label class="checkbox-item">
+              <input type="checkbox" />
+              <span class="utm-label">
+                <span class="utm-desc">Where traffic came from</span>
+                <span class="utm-key">utm_source</span>
+              </span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" />
+              <span class="utm-label">
+                <span class="utm-desc">Marketing channel type</span>
+                <span class="utm-key">utm_medium</span>
+              </span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" />
+              <span class="utm-label">
+                <span class="utm-desc">Campaign name identifier</span>
+                <span class="utm-key">utm_campaign</span>
+              </span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" />
+              <span class="utm-label">
+                <span class="utm-desc">Paid keyword targeted</span>
+                <span class="utm-key">utm_term</span>
+              </span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" />
+              <span class="utm-label">
+                <span class="utm-desc">Ad creative variant</span>
+                <span class="utm-key">utm_content</span>
+              </span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" />
+              <span class="utm-label">
+                <span class="utm-desc">Unique campaign ID</span>
+                <span class="utm-key">utm_id</span>
+              </span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" />
+              <span class="utm-label">
+                <span class="utm-desc">First page visited</span>
+                <span class="utm-key">landing_page_url</span>
+              </span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" />
+              <span class="utm-label">
+                <span class="utm-desc">Referring website URL</span>
+                <span class="utm-key">referrer_url</span>
+              </span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" />
+              <span class="utm-label">
+                <span class="utm-desc">First visit timestamp</span>
+                <span class="utm-key">first_touch_at</span>
+              </span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" />
+              <span class="utm-label">
+                <span class="utm-desc">Latest visit timestamp</span>
+                <span class="utm-key">last_touch_at</span>
+              </span>
+            </label>
           </div>
           <div class="custom-key-row">
             <input type="text" placeholder="Add custom key" />
@@ -590,11 +671,13 @@
         <div class="font-row">
           <div class="font-field">
             <label for="font-family">Font Family</label>
-            <input type="text" id="font-family" value="Inter" placeholder="e.g. Inter, Poppins" />
+            <input type="text" id="font-family" value="Inter" placeholder="e.g. Inter, Poppins"
+              oninput="updateFontPreview()" />
           </div>
           <div class="font-field">
             <label for="font-type">Font Type</label>
-            <input type="text" id="font-type" value="Regular" placeholder="e.g. Regular, Medium" />
+            <input type="text" id="font-type" value="Regular" placeholder="e.g. Regular, Medium"
+              oninput="updateFontPreview()" />
           </div>
         </div>
 
@@ -622,6 +705,43 @@
   </div>
 
   <script>
+    // ── Font preview ──
+    const _loadedFonts = new Set();
+    function loadGoogleFont(family) {
+      if (!family || _loadedFonts.has(family)) return;
+      _loadedFonts.add(family);
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(family)}:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap`;
+      document.head.appendChild(link);
+    }
+    function typeToWeight(type) {
+      const t = type.toLowerCase();
+      if (t.includes('thin'))       return 100;
+      if (t.includes('extralight') || t.includes('extra light') || t.includes('ultra light')) return 200;
+      if (t.includes('light'))      return 300;
+      if (t.includes('medium'))     return 500;
+      if (t.includes('semibold') || t.includes('semi bold') || t.includes('demi')) return 600;
+      if (t.includes('extrabold') || t.includes('extra bold') || t.includes('ultrabold')) return 800;
+      if (t.includes('black') || t.includes('heavy')) return 900;
+      if (t.includes('bold'))       return 700;
+      return 400; // regular / normal
+    }
+    function updateFontPreview() {
+      const family = document.getElementById('font-family').value.trim() || 'Poppins';
+      const type   = document.getElementById('font-type').value.trim()   || 'Regular';
+      loadGoogleFont(family);
+      const weight = typeToWeight(type);
+      const italic = /italic/i.test(type) ? 'italic' : 'normal';
+      [document.getElementById('font-family'), document.getElementById('font-type')].forEach(el => {
+        el.style.fontFamily  = `'${family}', 'Poppins', sans-serif`;
+        el.style.fontWeight  = weight;
+        el.style.fontStyle   = italic;
+      });
+    }
+    // init on load
+    updateFontPreview();
+
     function updateSlug(name) {
       document.getElementById('org-slug').value = name
         .toLowerCase()
