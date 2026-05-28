@@ -278,7 +278,7 @@
     .custom-key-group {
       display: flex;
       gap: 8px;
-      align-items: flex-start;
+      align-items: stretch;
     }
     .custom-key-fields {
       display: flex;
@@ -304,7 +304,10 @@
     .custom-key-fields input:focus { border-color: var(--primary-70); }
     .custom-key-fields input::placeholder { font-family: 'Poppins', sans-serif; }
     .btn-add {
-      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 20px;
       background: white;
       border: 1px solid var(--border);
       border-radius: 8px;
