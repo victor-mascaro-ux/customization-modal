@@ -690,31 +690,13 @@
             <label for="font-family">Font Family</label>
             <input type="text" id="font-family" list="font-family-list" value="Inter"
               placeholder="Search Google Fonts…" oninput="updateFontPreview()" autocomplete="off" />
-            <datalist id="font-family-list">
-              <option value="Inter"><option value="Poppins"><option value="Roboto">
-              <option value="Open Sans"><option value="Lato"><option value="Montserrat">
-              <option value="Raleway"><option value="Nunito"><option value="DM Sans">
-              <option value="Outfit"><option value="Plus Jakarta Sans"><option value="Work Sans">
-              <option value="Fira Sans"><option value="Mulish"><option value="Quicksand">
-              <option value="Josefin Sans"><option value="Source Sans Pro"><option value="Noto Sans">
-              <option value="Playfair Display"><option value="Merriweather"><option value="EB Garamond">
-              <option value="Cormorant Garamond"><option value="Libre Baskerville">
-              <option value="Space Mono"><option value="JetBrains Mono"><option value="Fira Code">
-              <option value="Roboto Mono">
-            </datalist>
+            <datalist id="font-family-list"></datalist>
           </div>
           <div class="font-field">
             <label for="font-type">Font Type</label>
             <input type="text" id="font-type" list="font-type-list" value="Regular"
               placeholder="e.g. Regular, Bold…" oninput="updateFontPreview()" autocomplete="off" />
-            <datalist id="font-type-list">
-              <option value="Thin"><option value="Extra Light"><option value="Light">
-              <option value="Regular"><option value="Medium"><option value="Semi Bold">
-              <option value="Bold"><option value="Extra Bold"><option value="Black">
-              <option value="Thin Italic"><option value="Light Italic"><option value="Italic">
-              <option value="Medium Italic"><option value="Semi Bold Italic">
-              <option value="Bold Italic">
-            </datalist>
+            <datalist id="font-type-list"></datalist>
           </div>
         </div>
 
@@ -742,6 +724,116 @@
   </div>
 
   <script>
+    // ── Google Fonts constants ──
+    const WEIGHT_NAMES = {
+      100: 'Thin', 200: 'Extra Light', 300: 'Light', 400: 'Regular',
+      500: 'Medium', 600: 'Semi Bold', 700: 'Bold', 800: 'Extra Bold', 900: 'Black'
+    };
+
+    // Fallback font list (used if the metadata API is unreachable)
+    const GF_POPULAR = [
+      'ABeeZee','Abril Fatface','Acme','Albert Sans','Alegreya','Alegreya Sans',
+      'Alfa Slab One','Alice','Amatic SC','Anonymous Pro','Anton','Arimo',
+      'Arvo','Asap','Assistant','Atkinson Hyperlegible','Audiowide','Baloo 2',
+      'Barlow','Barlow Condensed','Barlow Semi Condensed','Be Vietnam Pro',
+      'Bebas Neue','Bitter','Black Han Sans','Bree Serif','Cabin','Cairo',
+      'Cantarell','Cardo','Caveat','Chakra Petch','Chivo','Cinzel','Comfortaa',
+      'Commissioner','Concert One','Cormorant Garamond','Courier Prime',
+      'Crimson Pro','Crimson Text','DM Mono','DM Sans','DM Serif Display',
+      'Dancing Script','Darker Grotesque','Domine','Dosis','EB Garamond',
+      'Economica','Encode Sans','Epilogue','Exo 2','Fira Code','Fira Mono',
+      'Fira Sans','Fjalla One','Fraunces','Fredoka','Geologica','Gloria Hallelujah',
+      'Golos Text','Grandstander','Great Vibes','Heebo','IBM Plex Mono',
+      'IBM Plex Sans','IBM Plex Serif','Inconsolata','Indie Flower',
+      'Instrument Sans','Instrument Serif','Inter','Inter Tight','JetBrains Mono',
+      'Josefin Sans','Josefin Slab','Jost','Kanit','Karla','Kumbh Sans',
+      'Lato','League Spartan','Lexend','Libre Baskerville','Libre Franklin',
+      'Literata','Lobster','Lora','M PLUS 1','M PLUS Rounded 1c','Manrope',
+      'Marcellus','Merriweather','Merriweather Sans','Montserrat','Mulish',
+      'Noto Sans','Noto Serif','Nunito','Nunito Sans','Open Sans','Orbitron',
+      'Oswald','Outfit','Overpass','Pacifico','Playfair Display',
+      'Plus Jakarta Sans','Poppins','PT Mono','PT Sans','PT Serif','Public Sans',
+      'Quicksand','Raleway','Readex Pro','Recursive','Red Hat Display',
+      'Red Hat Text','Roboto','Roboto Condensed','Roboto Mono','Roboto Slab',
+      'Rowdies','Rubik','Sacramento','Saira','Sarabun','Schibsted Grotesk',
+      'Sen','Signika','Sofia Sans','Sora','Source Code Pro','Source Serif 4',
+      'Space Grotesk','Space Mono','Spectral','Titillium Web','Tomorrow',
+      'Ubuntu','Ubuntu Sans','Unbounded','Urbanist','Varela Round','Vollkorn',
+      'Work Sans','Yanone Kaffeesatz','Young Serif','Yrsa','Zilla Slab'
+    ];
+
+    // ── Font Family datalist — load all Google Fonts ──
+    function initFontFamilyList() {
+      const dl = document.getElementById('font-family-list');
+      fetch('https://fonts.google.com/metadata/fonts')
+        .then(r => r.text())
+        .then(txt => {
+          // Strip XSSI prefix )]}'
+          const json = txt.replace(/^\)\]\}'\n?/, '');
+          const data = JSON.parse(json);
+          const families = (data.familyMetadataList || []).map(f => f.family);
+          _populateFamilyDl(dl, families);
+        })
+        .catch(() => _populateFamilyDl(dl, GF_POPULAR));
+    }
+
+    function _populateFamilyDl(dl, families) {
+      dl.innerHTML = '';
+      families.forEach(name => {
+        const opt = document.createElement('option');
+        opt.value = name;
+        dl.appendChild(opt);
+      });
+    }
+
+    // ── Font Type datalist — variants actually available for the chosen family ──
+    const _typeCache = {};
+    function updateFontTypeList(family) {
+      if (!family) return;
+      const dl = document.getElementById('font-type-list');
+      if (_typeCache[family]) { _renderTypeDl(dl, _typeCache[family]); return; }
+      const allWeights = '0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;' +
+                         '1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900';
+      const url = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(family)}:ital,wght@${allWeights}&display=swap`;
+      fetch(url)
+        .then(r => r.text())
+        .then(css => {
+          const variants = [];
+          const seen = new Set();
+          const re = /@font-face\s*\{([^}]+)\}/g;
+          let m;
+          while ((m = re.exec(css)) !== null) {
+            const styleM  = /font-style:\s*(\w+)/.exec(m[1]);
+            const weightM = /font-weight:\s*(\d+)/.exec(m[1]);
+            if (!styleM || !weightM) continue;
+            const key = styleM[1] + '_' + weightM[1];
+            if (seen.has(key)) continue;
+            seen.add(key);
+            variants.push({ style: styleM[1], weight: parseInt(weightM[1]) });
+          }
+          // normal variants first (by weight), then italic (by weight)
+          variants.sort((a, b) =>
+            a.style !== b.style ? (a.style === 'normal' ? -1 : 1) : a.weight - b.weight
+          );
+          _typeCache[family] = variants;
+          _renderTypeDl(dl, variants);
+        })
+        .catch(() => {}); // keep current list on error
+    }
+
+    function _renderTypeDl(dl, variants) {
+      dl.innerHTML = '';
+      variants.forEach(v => {
+        const wName = WEIGHT_NAMES[v.weight] || ('Weight ' + v.weight);
+        const label = v.style === 'italic'
+          ? (wName === 'Regular' ? 'Italic' : wName + ' Italic')
+          : wName;
+        const opt = document.createElement('option');
+        opt.value = label;
+        dl.appendChild(opt);
+      });
+    }
+
     // ── Font preview ──
     const _loadedFonts = new Set();
     function loadGoogleFont(family) {
@@ -762,15 +854,17 @@
       if (t.includes('extrabold') || t.includes('extra bold') || t.includes('ultrabold')) return 800;
       if (t.includes('black') || t.includes('heavy')) return 900;
       if (t.includes('bold'))       return 700;
-      return 400; // regular / normal
+      return 400;
     }
     let _fontTimer;
     function updateFontPreview() {
       const family = document.getElementById('font-family').value.trim() || 'Poppins';
       const type   = document.getElementById('font-type').value.trim()   || 'Regular';
-      // Debounce font loading — apply style immediately, load font after 400ms pause
       clearTimeout(_fontTimer);
-      _fontTimer = setTimeout(() => loadGoogleFont(family), 400);
+      _fontTimer = setTimeout(() => {
+        loadGoogleFont(family);
+        updateFontTypeList(family);
+      }, 400);
       const weight = typeToWeight(type);
       const italic = /italic/i.test(type) ? 'italic' : 'normal';
       [document.getElementById('font-family'), document.getElementById('font-type')].forEach(el => {
@@ -780,6 +874,8 @@
       });
     }
     // init on load
+    initFontFamilyList();
+    updateFontTypeList('Inter');
     updateFontPreview();
 
     function addCustomKey() {
