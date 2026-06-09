@@ -413,6 +413,18 @@
       left: -50%;
       cursor: pointer;
     }
+    .hex-input-wrap {
+      display: flex;
+      align-items: center;
+      flex: 1;
+    }
+    .hex-prefix {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      color: #9ca3af;
+      user-select: none;
+      padding-right: 1px;
+    }
     .color-hex {
       flex: 1;
       border: none;
@@ -513,6 +525,15 @@
       grid-template-columns: 1fr 1fr;
       gap: 16px;
     }
+    .char-count {
+      display: block;
+      font-size: 11px;
+      color: var(--text-muted, #9ca3af);
+      text-align: right;
+      margin-top: 4px;
+    }
+    .char-count.warn { color: #f59e0b; }
+    .char-count.over { color: #ef4444; }
     .version-block {
       display: flex;
       flex-direction: column;
@@ -776,6 +797,16 @@
           </span>
           Marketing
         </button>
+        <button class="nav-item" data-tab="access" onclick="switchTab('access')">
+          <span class="nav-icon">
+            <!-- Key/lock icon representing access -->
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="7" cy="8" r="4" stroke="currentColor" stroke-width="2" fill="none"/>
+              <path d="M10.5 11L16 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </span>
+          Access
+        </button>
         <button class="nav-item" data-tab="branding" onclick="switchTab('branding')">
           <span class="nav-icon">
             <!-- Solid palette with transparent color dots (evenodd) -->
@@ -848,11 +879,13 @@
             </div>
             <div class="field-group">
               <label for="va-header">Landing Page Header</label>
-              <input type="text" id="va-header" value="Wealth is about experiencing life fully." placeholder="Enter your main heading…" oninput="updatePreview()">
+              <input type="text" id="va-header" value="Wealth is about experiencing life fully." maxlength="100" placeholder="Enter your main heading…" oninput="updatePreview(); updateCharCount('va-header', 'cc-va-header')">
+              <span class="char-count" id="cc-va-header">59 remaining</span>
             </div>
             <div class="field-group">
               <label for="va-subtext">Landing Page Header Subtext</label>
-              <textarea id="va-subtext" rows="3" placeholder="Enter supporting subtext…" oninput="updatePreview()">Take a few minutes to get clear on what matters most and what your money is really for.</textarea>
+              <textarea id="va-subtext" rows="3" maxlength="100" placeholder="Enter supporting subtext…" oninput="updatePreview(); updateCharCount('va-subtext', 'cc-va-subtext')">Take a few minutes to get clear on what matters most and what your money is really for.</textarea>
+              <span class="char-count" id="cc-va-subtext">13 remaining</span>
             </div>
           </div>
 
@@ -863,11 +896,13 @@
             </div>
             <div class="field-group">
               <label for="vb-header">Landing Page Header</label>
-              <input type="text" id="vb-header" placeholder="Enter an alternative heading…" oninput="updatePreview()">
+              <input type="text" id="vb-header" maxlength="100" placeholder="Enter an alternative heading…" oninput="updatePreview(); updateCharCount('vb-header', 'cc-vb-header')">
+              <span class="char-count" id="cc-vb-header">100 remaining</span>
             </div>
             <div class="field-group">
               <label for="vb-subtext">Landing Page Header Subtext</label>
-              <textarea id="vb-subtext" rows="3" placeholder="Enter alternative subtext…" oninput="updatePreview()"></textarea>
+              <textarea id="vb-subtext" rows="3" maxlength="100" placeholder="Enter alternative subtext…" oninput="updatePreview(); updateCharCount('vb-subtext', 'cc-vb-subtext')"></textarea>
+              <span class="char-count" id="cc-vb-subtext">100 remaining</span>
             </div>
           </div>
         </div>
@@ -1027,15 +1062,23 @@
 
 
 
+        <button class="btn-save" onclick="showSaveModal()">Save Changes</button>
+      </section>
+
+      <!-- Access Tab -->
+      <section id="tab-access" class="tab-panel">
+        <div class="main-header">
+          <h2>Access</h2>
+        </div>
+
         <div>
-          <p class="section-label">Prospect Visibility — Advisors</p>
+          <p class="section-label">Advisory Team Access</p>
           <div class="advisors-box">
             <label class="checkbox-item"><input type="checkbox"> Advisor Test</label>
             <label class="checkbox-item"><input type="checkbox"> New Advisor</label>
             <label class="checkbox-item"><input type="checkbox"> Taylor Fah</label>
           </div>
         </div>
-
 
         <button class="btn-save" onclick="showSaveModal()">Save Changes</button>
       </section>
@@ -1053,7 +1096,10 @@
               <div class="color-swatch" id="swatch-primary" style="background:#240446;">
                 <input type="color" value="#240446" oninput="updateColor('primary', this.value)">
               </div>
-              <input class="color-hex" id="hex-primary" type="text" value="#240446" maxlength="7" oninput="updateColorFromHex('primary', this.value)">
+              <div class="hex-input-wrap">
+                <span class="hex-prefix">#</span>
+                <input class="color-hex" id="hex-primary" type="text" value="240446" maxlength="6" oninput="updateColorFromHex('primary', this.value)">
+              </div>
             </div>
           </div>
 
@@ -1063,7 +1109,10 @@
               <div class="color-swatch" id="swatch-accent" style="background:#7639A1;">
                 <input type="color" value="#7639A1" oninput="updateColor('accent', this.value)">
               </div>
-              <input class="color-hex" id="hex-accent" type="text" value="#7639A1" maxlength="7" oninput="updateColorFromHex('accent', this.value)">
+              <div class="hex-input-wrap">
+                <span class="hex-prefix">#</span>
+                <input class="color-hex" id="hex-accent" type="text" value="7639A1" maxlength="6" oninput="updateColorFromHex('accent', this.value)">
+              </div>
             </div>
           </div>
         </div>
@@ -1356,8 +1405,8 @@
       const subtext = document.getElementById(_previewVersion === 'a' ? 'va-subtext' : 'vb-subtext').value.trim();
       headerEl.textContent  = header  || '';
       subtextEl.textContent = subtext || '';
-      const primary = document.getElementById('hex-primary').value || '#240446';
-      const accent  = document.getElementById('hex-accent').value  || '#7639A1';
+      const primary = '#' + (document.getElementById('hex-primary').value || '240446');
+      const accent  = '#' + (document.getElementById('hex-accent').value  || '7639A1');
       lp.style.setProperty('--lp-primary', primary);
       lp.style.setProperty('--lp-accent',  accent);
       const orgName = document.getElementById('org-name').value.trim() || 'Acme Advisors';
@@ -1387,15 +1436,29 @@
     }
 
     function updateColor(key, hex) {
+      // hex comes from color picker as "#RRGGBB"
       document.getElementById('swatch-' + key).style.background = hex;
-      document.getElementById('hex-' + key).value = hex.toUpperCase();
+      document.getElementById('hex-' + key).value = hex.slice(1).toUpperCase();
       updatePreview();
     }
 
+    function updateCharCount(fieldId, countId) {
+      const field = document.getElementById(fieldId);
+      const countEl = document.getElementById(countId);
+      if (!field || !countEl) return;
+      const max = parseInt(field.getAttribute('maxlength') || '100', 10);
+      const remaining = max - field.value.length;
+      countEl.textContent = remaining + ' remaining';
+      countEl.classList.toggle('warn', remaining <= 20 && remaining > 0);
+      countEl.classList.toggle('over', remaining < 0);
+    }
+
     function updateColorFromHex(key, value) {
-      if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
-        document.getElementById('swatch-' + key).style.background = value;
-        document.querySelector('#swatch-' + key + ' input[type=color]').value = value;
+      // value is 6 hex chars (no leading #)
+      if (/^[0-9A-Fa-f]{6}$/.test(value)) {
+        const hex = '#' + value;
+        document.getElementById('swatch-' + key).style.background = hex;
+        document.querySelector('#swatch-' + key + ' input[type=color]').value = hex;
         updatePreview();
       }
     }
