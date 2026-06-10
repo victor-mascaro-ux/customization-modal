@@ -1432,7 +1432,7 @@
     initFontFamilyList();
     updateFontTypeList('Inter');
     updateFontPreview();
-        setTimeout(() => { updatePreview(); onPreviewInput('header'); onPreviewInput('subtext'); fitPreview(); }, 0);    function addCustomKey() {
+        setTimeout(() => { updatePreview(); onPreviewInput('header'); onPreviewInput('subtext'); _measureBothHeights(); fitPreview(); }, 0);    function addCustomKey() {
       const keyEl  = document.getElementById('custom-key');
       const descEl = document.getElementById('custom-key-desc');
       const key  = keyEl.value.trim();
@@ -1454,14 +1454,18 @@
     }
 
     var _previewVersion = 'a';
+    // natural page height per version — scale is based on the taller one
+    // so the preview stays the same size when switching A/B
+    var _vHeights = { a: 0, b: 0 };
 
     function fitPreview() {
       const lp = document.getElementById('lp-preview');
       const outer = document.querySelector('.preview-scale-outer');
       if (!lp || !outer || !outer.clientHeight) return;
       const natW = 800;
-      const natH = lp.offsetHeight;
-      if (!natH) return;
+      if (!lp.offsetHeight) return;
+      _vHeights[_previewVersion] = lp.offsetHeight;
+      const natH = Math.max(_vHeights.a, _vHeights.b, lp.offsetHeight);
       const s = Math.min(outer.clientWidth / natW, outer.clientHeight / natH);
       lp.style.transform = 'scale(' + s + ')';
       // center horizontally when narrower than the container
@@ -1469,13 +1473,34 @@
     }
     window.addEventListener('resize', fitPreview);
 
+    // measure both versions' page heights (swaps text invisibly within one frame)
+    function _measureBothHeights() {
+      const lp = document.getElementById('lp-preview');
+      const headerEl  = document.getElementById('preview-header');
+      const subtextEl = document.getElementById('preview-subtext');
+      if (!lp || !headerEl || !subtextEl || !lp.offsetHeight) return;
+      const saveH = headerEl.textContent, saveS = subtextEl.textContent;
+      ['a', 'b'].forEach(v => {
+        headerEl.textContent  = document.getElementById(v === 'a' ? 'va-header'  : 'vb-header').value;
+        subtextEl.textContent = document.getElementById(v === 'a' ? 'va-subtext' : 'vb-subtext').value;
+        _vHeights[v] = lp.offsetHeight;
+      });
+      headerEl.textContent = saveH;
+      subtextEl.textContent = saveS;
+    }
+
+    // measured so header stays on 1 line and subtext on 2 lines (Poppins, 800px page)
+    var FIELD_MAX = { header: 40, subtext: 120 };
+
     function _setBadge(el) {
       const badge = document.getElementById('preview-char-badge');
       if (!el || !badge) return;
+      const field = el.id === 'preview-header' ? 'header' : 'subtext';
+      const max = FIELD_MAX[field];
       const len = el.textContent.length;
-      badge.textContent = len + '/100';
-      badge.classList.toggle('warn', len >= 80 && len < 100);
-      badge.classList.toggle('over', len >= 100);
+      badge.textContent = len + '/' + max;
+      badge.classList.toggle('warn', len >= max * 0.85 && len < max);
+      badge.classList.toggle('over', len >= max);
       // just below the field, right-aligned with its right edge (viewport coords)
       const r = el.getBoundingClientRect();
       badge.style.top  = (r.bottom + 4) + 'px';
@@ -1486,6 +1511,18 @@
     function onPreviewInput(field) {
       const el = document.getElementById('preview-' + field);
       if (!el) return;
+      // hard limit: contenteditable has no maxlength, enforce here
+      const max = FIELD_MAX[field];
+      if (el.textContent.length > max) {
+        el.textContent = el.textContent.slice(0, max);
+        // put the caret back at the end after truncation
+        const range = document.createRange();
+        range.selectNodeContents(el);
+        range.collapse(false);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
       // sync to hidden backing input
       const input = document.getElementById((_previewVersion === 'a' ? 'va-' : 'vb-') + field);
       if (input) input.value = el.textContent;
