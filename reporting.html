@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Knomee Advisor — Reporting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap">
+<style>
+  :root {
+    --primary-100: #240446;
+    --primary-70: #4A1C96;
+    --accent: #7639A1;
+    --mint: #10b981;
+    --mint-bg: #d7f5e9;
+    --panel: #f7f7fb;
+    --border: #ececf2;
+    --text: #1a1a2e;
+    --muted: #6b7280;
+    --muted-2: #9ca3af;
+    --dark-panel: #1d1035;
+    --gold: #f59e0b;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Poppins', sans-serif; background: white; color: var(--text); }
+
+  /* ── Navbar ── */
+  .navbar {
+    background: var(--primary-100);
+    height: 62px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+  }
+  .navbar-logo { display: flex; align-items: flex-end; gap: 10px; }
+  .navbar-logo svg { height: 26px; width: auto; display: block; }
+  .navbar-logo .advisor {
+    color: white; font-size: 14px; font-weight: 700;
+    letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 2px;
+  }
+  .navbar-avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: linear-gradient(135deg, #c4b5fd, #7639A1);
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 600; font-size: 16px;
+    border: 2px solid rgba(255,255,255,0.6);
+  }
+
+  /* ── Page shell ── */
+  .page { max-width: 1220px; margin: 0 auto; padding: 0 32px 80px; }
+
+  /* ── Top tabs ── */
+  .top-tabs { display: flex; gap: 8px; border-bottom: 1px solid var(--border); margin-bottom: 36px; }
+  .top-tab {
+    padding: 22px 28px 18px;
+    font-size: 16px; font-weight: 500; color: var(--muted);
+    border: none; background: transparent; cursor: pointer;
+    border-bottom: 3px solid transparent;
+    font-family: 'Poppins', sans-serif;
+  }
+  .top-tab.active { color: var(--text); font-weight: 600; border-bottom-color: var(--primary-100); }
+
+  h1 { font-size: 40px; font-weight: 700; color: var(--primary-100); letter-spacing: -0.5px; }
+  .page-sub { color: var(--muted); font-size: 15px; margin: 4px 0 32px; }
+
+  /* ── Section wrapper ── */
+  .section {
+    background: var(--panel);
+    border-radius: 24px;
+    padding: 28px;
+    margin-bottom: 28px;
+  }
+  .section-head { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
+  .section-icon {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: #ece4f6; font-size: 17px; flex-shrink: 0;
+  }
+  .section-title { font-size: 20px; font-weight: 700; color: var(--text); }
+  .chip {
+    font-size: 12px; font-weight: 500; padding: 4px 12px; border-radius: 20px;
+    background: #ece4f6; color: var(--accent);
+  }
+
+  .card-w {
+    background: white; border-radius: 16px; padding: 28px;
+    border: 1px solid var(--border);
+  }
+
+  /* ── Funnel ── */
+  .funnel-stats { display: flex; justify-content: space-around; margin-bottom: 28px; }
+  .funnel-stat { text-align: center; }
+  .funnel-stat .k { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; }
+  .funnel-stat .s { font-size: 13px; color: var(--muted-2); }
+  .funnel-stat .v { font-size: 42px; font-weight: 700; color: var(--text); line-height: 1.15; }
+  .delta {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--mint-bg); color: #047857;
+    font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 14px;
+  }
+  .funnel-svg { width: 100%; display: block; margin-bottom: 18px; }
+  .legend { display: flex; justify-content: center; gap: 32px; font-size: 14px; color: var(--text); }
+  .legend span { display: inline-flex; align-items: center; gap: 8px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+  /* ── Engagement quality ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .metric-label { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; margin-bottom: 14px; }
+  .metric-big { font-size: 54px; font-weight: 700; color: var(--primary-100); line-height: 1; }
+  .metric-note { font-size: 13px; color: var(--muted-2); margin-top: 14px; }
+  .hot-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #fdf0cc; color: #92600a; font-size: 13px; font-weight: 600;
+    padding: 4px 12px; border-radius: 16px; margin-left: 10px;
+  }
+  .followup { font-size: 13px; font-weight: 600; color: var(--accent); margin-top: 18px; }
+
+  /* ── Classification table ── */
+  .ptable { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .ptable th {
+    text-align: left; font-size: 12px; font-weight: 600; letter-spacing: 0.05em;
+    text-transform: uppercase; color: var(--muted); padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .ptable td { padding: 12px 14px; border-bottom: 1px solid var(--border); }
+  .ptable tr:last-child td { border-bottom: none; }
+  .ptable td.name { font-weight: 600; color: var(--text); }
+  .niche-chip {
+    font-size: 12px; font-weight: 500; padding: 4px 12px; border-radius: 14px;
+    background: #ece4f6; color: var(--primary-70); white-space: nowrap;
+  }
+  .lvl { font-size: 12px; font-weight: 600; padding: 3px 11px; border-radius: 12px; white-space: nowrap; }
+  .lvl.high   { background: var(--mint-bg); color: #047857; }
+  .lvl.medium { background: #fdf0cc; color: #92600a; }
+  .lvl.low    { background: #fde2e2; color: #b91c1c; }
+
+  /* ── Hot leads ── */
+  .leads-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+  .lead-card { background: white; border-radius: 16px; border: 1px solid var(--border); padding: 24px; position: relative; overflow: hidden; }
+  .lead-card::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
+    background: var(--mint); border-radius: 0 0 16px 16px;
+  }
+  .lead-name { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .lead-niche { font-size: 12px; font-weight: 600; color: var(--accent); margin-bottom: 12px; }
+  .lead-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+  .lead-desc strong { color: var(--text); }
+
+  /* ── Niche analysis ── */
+  .niche-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+  .sub-title { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .sub-sub { font-size: 13px; color: var(--muted-2); margin-bottom: 20px; }
+  .niche-row { margin-bottom: 18px; }
+  .niche-row-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+  .niche-row-top .n { font-size: 14px; font-weight: 500; color: var(--text); }
+  .niche-row-top .v { font-size: 14px; font-weight: 700; color: var(--primary-70); display: inline-flex; align-items: center; gap: 6px; }
+  .strength { font-size: 11px; font-weight: 500; padding: 2px 9px; border-radius: 11px; }
+  .strength.strong   { background: var(--mint-bg); color: #047857; }
+  .strength.emerging { background: #fdf0cc; color: #92600a; }
+  .bar { height: 6px; border-radius: 3px; background: #eee9f5; overflow: hidden; }
+  .bar i { display: block; height: 100%; border-radius: 3px; background: linear-gradient(90deg, #7639A1, #a78bda); }
+  .niche-note { font-size: 13px; color: var(--muted); line-height: 1.6; border-top: 1px solid var(--border); padding-top: 16px; margin-top: 6px; }
+  .niche-note strong { color: var(--accent); }
+
+  .quote-list { list-style: none; }
+  .quote-list li {
+    font-size: 14px; color: var(--text); line-height: 1.55;
+    padding-left: 20px; position: relative; margin-bottom: 14px;
+  }
+  .quote-list li::before {
+    content: ''; width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent); position: absolute; left: 2px; top: 7px;
+  }
+  .fx-list { list-style: none; }
+  .fx-list li { font-size: 14px; color: var(--text); line-height: 1.55; padding-left: 26px; position: relative; margin-bottom: 14px; }
+  .fx-list li:last-child { margin-bottom: 0; }
+  .fx-list li::before { position: absolute; left: 0; top: 0; font-size: 14px; }
+  .fx-list li.up::before   { content: '↗'; color: var(--mint); font-weight: 700; }
+  .fx-list li.warn::before { content: '↗'; color: var(--gold); font-weight: 700; }
+  .fx-list li.flat::before { content: '→'; color: var(--muted-2); font-weight: 700; }
+  .stack { display: flex; flex-direction: column; gap: 20px; }
+
+  /* ── Alignment summary (dark) ── */
+  .summary {
+    background: var(--dark-panel); border-radius: 24px; padding: 34px;
+    color: #e7e3f1;
+  }
+  .summary .section-head { margin-bottom: 24px; }
+  .summary .section-icon { background: var(--mint); color: white; }
+  .summary .section-title { color: white; }
+  .summary .chip { background: rgba(52,211,153,0.18); color: #34d399; }
+  .sum-check { color: #34d399; font-weight: 600; font-size: 15px; margin-bottom: 18px; }
+  .sum-list { list-style: none; margin-bottom: 22px; }
+  .sum-list li { font-size: 14px; line-height: 1.65; padding-left: 22px; position: relative; margin-bottom: 12px; }
+  .sum-list li::before {
+    content: ''; width: 7px; height: 7px; border-radius: 50%;
+    background: #34d399; position: absolute; left: 2px; top: 8px;
+  }
+  .sum-list strong { color: white; }
+  .sum-quote {
+    font-size: 15px; font-style: italic; color: #c9bfe2;
+    border-left: 3px solid var(--accent); padding: 4px 0 4px 16px; margin-bottom: 22px;
+  }
+  .sum-reco {
+    background: rgba(255,255,255,0.06); border-left: 3px solid #34d399;
+    border-radius: 8px; padding: 16px 20px; font-size: 14px; line-height: 1.65;
+    margin-bottom: 14px;
+  }
+  .sum-reco strong { color: white; }
+  .sum-btn {
+    display: inline-block; background: #2dd4a8; color: #0b3328;
+    font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 700;
+    padding: 13px 24px; border-radius: 10px; border: none; cursor: pointer;
+    margin-top: 10px;
+  }
+  .sum-btn:hover { background: #34e0b3; }
+</style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-logo">
+      <svg viewBox="0 0 1702 288" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M165.378 198.685C164.99 198.685 164.537 198.685 164.149 198.62C110.711 192.518 93.0496 170.8 87.2917 158.466C78.8167 140.224 83.2159 121.394 98.5487 110.372C112.523 100.333 130.766 101.12 141.895 112.274C146.229 116.605 146.294 123.757 142.024 128.152C137.753 132.548 130.703 132.614 126.367 128.283C122.356 124.281 115.757 125.462 111.358 128.677C108.318 130.843 101.913 137.206 107.347 148.886C110.258 155.119 121.063 169.62 159.815 175.393C180.064 141.34 175.859 123.691 173.012 117.458C170.619 112.34 167.319 109.125 163.179 107.813C159.298 106.632 154.704 107.222 150.951 109.453C145.711 112.602 138.918 110.831 135.813 105.516C132.707 100.202 134.455 93.3125 139.695 90.1632C148.817 84.6517 159.815 83.2739 169.648 86.3577C176.764 88.5885 186.598 94.0998 193.003 107.878C198.761 120.279 204.066 147.836 174.695 193.567C172.624 196.783 169.13 198.685 165.443 198.685H165.378Z" fill="white"/>
+        <path d="M182.923 284.948C177.554 284.948 172.572 281.405 170.89 275.893C168.884 269.136 172.636 261.984 179.235 259.95C221.093 246.959 252.6 211.922 261.398 168.487C267.803 136.796 261.656 104.515 244.124 77.5489C226.592 50.5825 199.744 32.1456 168.496 25.5844C161.703 24.1409 157.304 17.383 158.727 10.4937C160.151 3.60443 166.75 -0.85719 173.607 0.586272C211.389 8.45969 243.93 30.8333 265.15 63.508C286.37 96.1828 293.81 135.288 286.046 173.67C275.372 226.291 237.266 268.742 186.611 284.423C185.382 284.816 184.152 285.014 182.923 285.014V284.948Z" fill="white"/>
+        <path d="M117.96 288C117.119 288 116.278 287.934 115.437 287.737C77.6551 279.864 45.1137 257.556 23.8938 224.815C2.67386 192.142 -4.76604 153.036 2.99733 114.653C14.7718 56.39 59.6054 11.446 117.184 0.226364C124.041 -1.08587 130.64 3.4413 131.935 10.3305C133.228 17.2854 128.764 23.9778 121.971 25.2901C74.4204 34.6069 37.415 71.6777 27.6461 119.837C21.2413 151.528 27.3872 183.809 44.9196 210.775C62.4518 237.742 89.3002 256.178 120.547 262.739C127.341 264.182 131.741 270.941 130.317 277.83C129.088 283.866 123.847 288 118.025 288H117.96Z" fill="white"/>
+        <path d="M58.8323 136.393C57.9266 136.393 57.0208 136.262 56.1152 136.066C49.5809 134.556 45.5052 127.93 47.0578 121.303C53.0745 94.861 68.86 72.4218 91.5679 58.0527C114.211 43.6838 141.059 39.1566 167.132 45.2584C202.843 53.6568 231.179 81.0825 241.013 116.972C242.824 123.534 239.072 130.291 232.602 132.128C226.134 133.966 219.47 130.094 217.658 123.599C210.218 96.4357 188.74 75.6367 161.632 69.2724C141.901 64.614 121.586 68.0914 104.378 78.983C87.2334 89.8746 75.2648 106.868 70.6715 126.88C69.3775 132.588 64.3961 136.393 58.8323 136.393Z" fill="white"/>
+        <path d="M144.457 245.68C137.018 245.68 129.448 244.828 121.944 243.055C82.3504 233.804 52.4614 201.523 45.7331 160.909C44.6333 154.217 49.0973 147.853 55.6961 146.737C62.295 145.622 68.5704 150.149 69.6702 156.841C74.7811 187.614 97.4243 212.021 127.378 219.042C168.136 228.556 208.893 202.704 218.339 161.435C219.826 154.807 226.361 150.674 232.895 152.249C239.429 153.758 243.505 160.385 241.953 167.011C231.278 213.858 190.003 245.68 144.457 245.68Z" fill="white"/>
+        <path d="M436.702 188.382H420.788V259.505H378.607V12.0173H420.788V155.38H441.167L488.2 94.0321H536.267L472.349 172.897L543.191 259.44H491.693L436.767 188.316L436.702 188.382Z" fill="white"/>
+        <path d="M720.165 152.598V254.231H677.984V158.57C677.984 137.18 666.921 123.14 646.219 123.14C619.241 123.14 607.143 147.678 607.143 168.346V254.231H564.962V88.824L597.439 87.4462C600.544 98.9939 602.615 116.184 602.615 123.533H603.65C611.93 103.587 628.557 86.7245 658.252 86.7245C698.362 86.7245 720.101 114.413 720.101 152.598H720.165Z" fill="white"/>
+        <path d="M921.586 171.888C921.586 221.688 887.75 256.331 836.252 256.331C784.756 256.331 750.92 221.622 750.92 171.888C750.92 122.154 785.144 86.7245 836.252 86.7245C887.362 86.7245 921.586 122.154 921.586 171.888ZM878.758 171.888C878.758 142.428 862.196 121.761 836.252 121.761C810.31 121.761 793.748 142.428 793.748 171.888C793.748 201.348 810.31 221.295 836.252 221.295C862.196 200.955 878.758 171.888Z" fill="white"/>
+        <path d="M1217.1 153.402V254.378H1174.92V159.044C1174.92 137.654 1164.18 124.007 1143.48 124.007C1117.92 124.007 1106.47 148.218 1106.47 168.492V254.378H1064.29V159.044C1064.29 137.654 1053.55 124.007 1032.85 124.007C1007.3 124.007 996.232 148.218 996.232 168.492V254.378H954.052V88.9705L986.529 87.5926C989.634 98.4842 991.704 116.331 991.704 123.679H992.028C999.986 103.34 1016.22 87.199 1044.88 87.199C1073.54 87.199 1093.6 101.896 1101.88 125.057C1109.51 103.996 1126.08 87.199 1155.45 87.199C1194.85 87.199 1216.97 114.887 1216.97 153.467L1217.1 153.402Z" fill="white"/>
+        <path d="M1382.9 203.382L1404.32 226.871C1391.89 243.34 1368.02 256.331 1335.22 256.331C1280.94 256.331 1248.14 221.622 1248.14 171.888C1248.14 122.154 1280.62 86.7245 1330.76 86.7245C1380.9 86.7245 1405.74 119.99 1405.74 164.54C1405.74 175.038 1403.99 181.731 1403.99 181.731H1290.64C1294.47 206.27 1311.02 223.066 1339.75 223.066C1363.24 223.066 1376.04 211.846 1382.96 203.448L1382.9 203.382ZM1290.64 157.454H1366.02C1365.7 135.736 1352.17 119.924 1330.76 119.924C1309.34 119.924 1294.47 134.294 1290.64 157.454Z" fill="white"/>
+        <path d="M1564.72 203.382L1586.13 226.871C1573.71 243.34 1549.84 256.331 1517.03 256.331C1462.76 256.331 1429.96 221.622 1429.96 171.888C1429.96 122.154 1462.44 86.7245 1512.57 86.7245C1562.72 86.7245 1587.55 119.99 1587.55 164.54C1587.55 175.038 1585.81 181.731 1585.81 181.731H1472.46C1476.28 206.27 1492.85 223.066 1521.56 223.066C1545.05 223.066 1557.86 211.846 1564.79 203.448L1564.72 203.382ZM1472.46 157.454H1547.83C1547.51 135.736 1533.99 119.924 1512.57 119.924C1491.15 119.924 1476.28 134.294 1472.46 157.454Z" fill="white"/>
+        <path d="M1660.46 86.9999L1650.6 69.5919H1646.38V86.9999H1637.42V42.3279H1654.18C1657.64 42.3279 1660.58 42.9465 1663.02 44.1839C1665.45 45.3785 1667.26 47.0212 1668.46 49.1119C1669.69 51.1599 1670.31 53.4639 1670.31 56.0239C1670.31 58.9679 1669.46 61.6345 1667.75 64.0239C1666.05 66.3705 1663.51 67.9919 1660.14 68.8879L1670.82 86.9999H1660.46ZM1646.38 62.8719H1653.86C1656.3 62.8719 1658.11 62.2959 1659.3 61.1439C1660.5 59.9492 1661.1 58.3065 1661.1 56.2159C1661.1 54.1679 1660.5 52.5892 1659.3 51.4799C1658.11 50.3279 1656.3 49.7519 1653.86 49.7519H1646.38V62.8719Z" fill="white"/>
+        <path d="M1694 65C1694 42.9086 1676.09 25 1654 25C1631.91 25 1614 42.9086 1614 65C1614 87.0914 1631.91 105 1654 105C1676.09 105 1694 87.0914 1694 65ZM1702 65C1702 91.5097 1680.51 113 1654 113C1627.49 113 1606 91.5097 1606 65C1606 38.4903 1627.49 17 1654 17C1680.51 17 1702 38.4903 1702 65Z" fill="white"/>
+      </svg>
+      <span class="advisor">Advisor</span>
+    </div>
+    <div class="navbar-avatar">A</div>
+  </nav>
+
+  <div class="page">
+
+    <!-- Top tabs -->
+    <div class="top-tabs">
+      <button class="top-tab">Prospects</button>
+      <button class="top-tab">Clients</button>
+      <button class="top-tab active">Reporting</button>
+    </div>
+
+    <h1>Reporting</h1>
+    <p class="page-sub">Aggregated analytics for your prospect and client base</p>
+
+    <!-- ════ Prospect Funnel (unchanged — no data in source doc) ════ -->
+    <div class="section">
+      <div class="section-head">
+        <span class="section-icon">🔻</span>
+        <span class="section-title">Prospect Funnel</span>
+      </div>
+      <div class="card-w">
+        <div class="funnel-stats">
+          <div class="funnel-stat">
+            <div class="k">Landed</div>
+            <div class="s">Sign-up page</div>
+            <div class="v">1,284</div>
+            <span class="delta">↗ +12%</span>
+          </div>
+          <div class="funnel-stat">
+            <div class="k">Completed</div>
+            <div class="s">All adventures</div>
+            <div class="v">847</div>
+            <span class="delta">↗ +8%</span>
+          </div>
+          <div class="funnel-stat">
+            <div class="k">Scheduled</div>
+            <div class="s">Booking link</div>
+            <div class="v">312</div>
+            <span class="delta">↗ +24%</span>
+          </div>
+        </div>
+        <svg class="funnel-svg" viewBox="0 0 1080 110" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="fg" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#8b5cf6"/>
+              <stop offset="55%" stop-color="#38bdf8"/>
+              <stop offset="100%" stop-color="#2dd4a8"/>
+            </linearGradient>
+          </defs>
+          <polygon points="20,5 1060,42 1060,68 20,105" fill="url(#fg)" stroke="#1d1035" stroke-width="2.5" stroke-linejoin="round"/>
+          <text x="380" y="62" fill="white" font-family="Poppins, sans-serif" font-size="22" font-weight="600">66%</text>
+          <text x="730" y="60" fill="white" font-family="Poppins, sans-serif" font-size="22" font-weight="600">37%</text>
+        </svg>
+        <div class="legend">
+          <span><i class="dot" style="background:#a78bfa"></i> 66% complete profile</span>
+          <span><i class="dot" style="background:#2dd4a8"></i> 37% book a call</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ Prospect Engagement Quality ════ -->
+    <div class="section">
+      <div class="section-head">
+        <span class="section-icon">📈</span>
+        <span class="section-title">Prospect Engagement Quality</span>
+      </div>
+      <div class="grid-2">
+        <div class="card-w">
+          <div class="metric-label">Avg Adventure Completion Rate</div>
+          <span class="metric-big">82%</span>
+          <span class="delta" style="margin-left:14px;">↗ +14%</span>
+          <div class="metric-note">Strong engagement signal — prospects are investing time</div>
+        </div>
+        <div class="card-w">
+          <div class="metric-label" style="text-transform:none; letter-spacing:0; font-size:14px; font-weight:600; color:var(--text);">High-Intent Prospects</div>
+          <div class="metric-note" style="margin: -6px 0 14px;">Ready to convert — high confidence, clear vision, want advisor help</div>
+          <span class="metric-big">3</span>
+          <span class="hot-chip">🔥 Hot leads</span>
+          <div class="followup">Worth prioritizing for follow-up this week</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ Prospect Classification (new — from live AI run on 8 prospects) ════ -->
+    <div class="section">
+      <div class="section-head">
+        <span class="section-icon">🧭</span>
+        <span class="section-title">Prospect Classification</span>
+        <span class="chip">✦ AI Generated</span>
+      </div>
+      <div class="card-w" style="padding: 12px 8px;">
+        <table class="ptable">
+          <thead>
+            <tr>
+              <th>Prospect</th><th>Niche</th><th>Advisor Ready</th>
+              <th>Emotional Readiness</th><th>Vision Clarity</th><th>Action Gap</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="name">Nicole Hunter</td><td><span class="niche-chip">Family Protector</span></td><td><span class="lvl low">Low</span></td><td><span class="lvl low">Low</span></td><td><span class="lvl low">Low</span></td><td><span class="lvl low">High</span></td></tr>
+            <tr><td class="name">Jeffrey Hunter</td><td><span class="niche-chip">Confident Delegator</span></td><td><span class="lvl high">High</span></td><td><span class="lvl high">High</span></td><td><span class="lvl medium">Medium</span></td><td><span class="lvl high">Low</span></td></tr>
+            <tr><td class="name">Ashley Smith</td><td><span class="niche-chip">Confident Delegator</span></td><td><span class="lvl high">High</span></td><td><span class="lvl medium">Medium</span></td><td><span class="lvl high">High</span></td><td><span class="lvl medium">Medium</span></td></tr>
+            <tr><td class="name">David Smith</td><td><span class="niche-chip">Real Estate Expander</span></td><td><span class="lvl high">High</span></td><td><span class="lvl high">High</span></td><td><span class="lvl high">High</span></td><td><span class="lvl medium">Medium</span></td></tr>
+            <tr><td class="name">Kira Lopez</td><td><span class="niche-chip">Cash Flow Stressed</span></td><td><span class="lvl high">High</span></td><td><span class="lvl low">Low</span></td><td><span class="lvl high">High</span></td><td><span class="lvl low">High</span></td></tr>
+            <tr><td class="name">Luke Lopez</td><td><span class="niche-chip">Cash Flow Stressed</span></td><td><span class="lvl high">High</span></td><td><span class="lvl medium">Medium</span></td><td><span class="lvl high">High</span></td><td><span class="lvl low">High</span></td></tr>
+            <tr><td class="name">Matt Bravos</td><td><span class="niche-chip">Work-Optional Seeker</span></td><td><span class="lvl high">High</span></td><td><span class="lvl medium">Medium</span></td><td><span class="lvl low">Low</span></td><td><span class="lvl medium">Medium</span></td></tr>
+            <tr><td class="name">Kristen Bravos</td><td><span class="niche-chip">Family Protector</span></td><td><span class="lvl high">High</span></td><td><span class="lvl medium">Medium</span></td><td><span class="lvl medium">Medium</span></td><td><span class="lvl low">High</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ════ Hot Leads (new) ════ -->
+    <div class="section">
+      <div class="section-head">
+        <span class="section-icon">🔥</span>
+        <span class="section-title">Hot Leads — Ready to Convert</span>
+      </div>
+      <div class="leads-grid">
+        <div class="lead-card">
+          <div class="lead-name">Jeffrey Hunter</div>
+          <div class="lead-niche">Confident Delegator</div>
+          <p class="lead-desc">High confidence, clear vision, already taking steps. Wants to delegate financial management. <strong>Needs a plan that funds kids' education without delaying retirement.</strong></p>
+        </div>
+        <div class="lead-card">
+          <div class="lead-name">Ashley Smith</div>
+          <div class="lead-niche">Confident Delegator</div>
+          <p class="lead-desc">High confidence, strong vision, actively engaged. Wants reassurance and structure. <strong>Key moment: renovation costs and school costs are about to overlap.</strong></p>
+        </div>
+        <div class="lead-card">
+          <div class="lead-name">David Smith</div>
+          <div class="lead-niche">Real Estate Expander</div>
+          <p class="lead-desc">Highly confident, vivid future vision, explicitly wants advisor help. Primary goal: lake house within 5 years. <strong>Cash flow calibration is the near-term unlock.</strong></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ Marketing Niche Analysis ════ -->
+    <div class="section">
+      <div class="section-head">
+        <span class="section-icon">🎯</span>
+        <span class="section-title">Marketing Niche Analysis</span>
+        <span class="chip">✦ AI Generated</span>
+      </div>
+      <div class="niche-grid">
+
+        <div class="card-w">
+          <div class="sub-title">◔ Prospect Niche Breakdown</div>
+          <div class="sub-sub">Is your marketing reaching the right people?</div>
+
+          <div class="niche-row">
+            <div class="niche-row-top"><span class="n">Confident Delegator</span><span class="v">25% <span class="strength strong">Strong</span></span></div>
+            <div class="bar"><i style="width:25%"></i></div>
+          </div>
+          <div class="niche-row">
+            <div class="niche-row-top"><span class="n">Family Protector</span><span class="v">25% <span class="strength strong">Strong</span></span></div>
+            <div class="bar"><i style="width:25%"></i></div>
+          </div>
+          <div class="niche-row">
+            <div class="niche-row-top"><span class="n">Cash Flow Stressed</span><span class="v">25% <span class="strength strong">Strong</span></span></div>
+            <div class="bar"><i style="width:25%"></i></div>
+          </div>
+          <div class="niche-row">
+            <div class="niche-row-top"><span class="n">Real Estate Expander</span><span class="v">13% <span class="strength emerging">Emerging</span></span></div>
+            <div class="bar"><i style="width:13%"></i></div>
+          </div>
+          <div class="niche-row">
+            <div class="niche-row-top"><span class="n">Work-Optional Seeker</span><span class="v">13% <span class="strength emerging">Emerging</span></span></div>
+            <div class="bar"><i style="width:13%"></i></div>
+          </div>
+
+          <div class="niche-note"><strong>Niche concentration:</strong> Top 2 niches represent 50% of prospects — marketing has a clear target audience.</div>
+        </div>
+
+        <div class="stack">
+          <div class="card-w">
+            <div class="sub-title">💬 Niche-Specific Problems</div>
+            <div class="sub-sub">Actual concerns from their adventures — ready to use as ad copy</div>
+            <ul class="quote-list">
+              <li>"I need to balance spending now and saving for later without feeling like I'm failing at both."</li>
+              <li>"I want to make work optional while my kids are still at home — the window is closing."</li>
+              <li>"Cash flow is negative and I'm pulling from savings just to stay afloat."</li>
+              <li>"I don't want to look back and realize I wasted the time I had with my family."</li>
+              <li>"I want to make sure my kids are financially okay long-term."</li>
+            </ul>
+          </div>
+
+          <div class="card-w">
+            <div class="sub-title">📈 Marketing Effectiveness Signals</div>
+            <div class="sub-sub">How well are your campaigns targeting your niche?</div>
+            <ul class="fx-list">
+              <li class="flat"><strong>Family + freedom is the universal motivator</strong> — appears in 7 of 8 prospects. Too broad to be a differentiator; don't lead with it.</li>
+              <li class="up"><strong>The save vs. spend tension is the sharpest hook</strong> — 6 of 8 prospects name it explicitly. This is your most resonant ad concept.</li>
+              <li class="up">Real estate goals (lake house, second property, relocation) appear in 4 of 8 — stronger signal than expected for a small sample.</li>
+              <li class="warn">Parent care as a financial burden appears in 2 of 8 — small but emotionally loaded niche worth watching.</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ════ Marketing Alignment Summary ════ -->
+    <div class="summary">
+      <div class="section-head">
+        <span class="section-icon">✦</span>
+        <span class="section-title">Marketing Alignment Summary</span>
+        <span class="chip">This week</span>
+      </div>
+
+      <div class="sum-check">✓ The save vs. spend tension is your anchor message</div>
+
+      <ul class="sum-list">
+        <li><strong>Who they are:</strong> family-first, experience-driven, mid-life planners — financially capable long-term but navigating real short-term tension between enjoying life now and securing the future.</li>
+        <li><strong>What they're not worried about:</strong> wealth accumulation. They're worried about making the right call at a meaningful moment.</li>
+        <li><strong>Strongest niche signal:</strong> the save vs. spend tension — specific enough to filter the right people in, broad enough to resonate across niches.</li>
+        <li><strong>Advisor-value readiness:</strong> 7 of 8 prospects want advisor help — only 1 wants to go it alone, and she has the lowest confidence scores.</li>
+      </ul>
+
+      <div class="sum-quote">"You've worked hard to build something real. Let's make sure you're actually enjoying it."</div>
+
+      <div class="sum-reco"><strong>Recommendation:</strong> Double down on the "enjoying life now without sacrificing later" message — it lands across Confident Delegators, Family Protectors, and Cash Flow Stressed segments equally. It's the thread that connects your best prospects.</div>
+      <div class="sum-reco" style="border-left-color: var(--gold);"><strong>Emerging opportunity:</strong> Real estate-adjacent planning (lake house, second property, relocation) is showing up organically without being targeted. Worth testing a content angle around it.</div>
+      <div class="sum-reco" style="border-left-color: #a78bfa;"><strong>Watch this segment:</strong> Cash Flow Stressed prospects have the highest long-term potential but need near-term stabilization first. They won't convert until that tension is resolved — which is exactly what an advisor conversation can unlock.</div>
+
+      <button class="sum-btn">View detailed niche analysis →</button>
+    </div>
+
+  </div>
+</body>
+</html>
