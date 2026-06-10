@@ -520,17 +520,11 @@
     }
 
     /* ── Version blocks (Site Customization) ── */
-    /* ── Site Customization two-column layout ── */
-    .customization-layout {
-      display: grid;
-      grid-template-columns: 1fr 490px;
-      gap: 24px;
-      align-items: start;
-    }
-    .version-editor {
+    /* ── Site Customization stacked layout ── */
+    .customization-stack {
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 14px;
     }
     .version-editor-tabs {
       display: flex;
@@ -540,7 +534,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 10px 16px;
+      padding: 8px 16px;
       border: 1.5px solid var(--border);
       border-radius: 10px;
       background: white;
@@ -553,8 +547,8 @@
       background: var(--primary-10, #f5f0fb);
     }
     .version-fields {
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 16px;
     }
     .char-count {
@@ -636,13 +630,14 @@
     }
     .preview-scale-outer {
       overflow: hidden;
-      height: 378px;
+      height: 210px;
       position: relative;
       background: white;
+      border-radius: 0 0 8px 8px;
     }
     .lp-preview {
       width: 800px;
-      transform: scale(0.605);
+      transform: scale(0.93);
       transform-origin: top left;
       position: absolute;
       top: 0; left: 0;
@@ -902,50 +897,20 @@
           <h2>Site Customization</h2>
         </div>
 
-        <div class="customization-layout">
+        <div class="customization-stack">
 
-          <!-- LEFT: version editor -->
-          <div class="version-editor">
-            <div class="version-editor-tabs">
-              <button class="version-editor-tab active" id="vetab-a" onclick="setVersion('a')">
-                <span class="version-badge version-badge-a">Version A</span>
-                <span class="version-default-tag">Default</span>
-              </button>
-              <button class="version-editor-tab" id="vetab-b" onclick="setVersion('b')">
-                <span class="version-badge version-badge-b">Version B</span>
-              </button>
-            </div>
-
-            <div class="version-fields" id="vfields-a">
-              <div class="field-group">
-                <label for="va-header">Landing Page Header</label>
-                <input type="text" id="va-header" value="Wealth is about experiencing life fully." maxlength="100" placeholder="Enter your main heading…" oninput="updatePreview(); updateCharCount('va-header', 'cc-va-header')">
-                <span class="char-count" id="cc-va-header">59 remaining</span>
-              </div>
-              <div class="field-group">
-                <label for="va-subtext">Landing Page Header Subtext</label>
-                <textarea id="va-subtext" rows="5" maxlength="100" placeholder="Enter supporting subtext…" oninput="updatePreview(); updateCharCount('va-subtext', 'cc-va-subtext')">Take a few minutes to get clear on what matters most and what your money is really for.</textarea>
-                <span class="char-count" id="cc-va-subtext">13 remaining</span>
-              </div>
-            </div>
-
-            <div class="version-fields" id="vfields-b" style="display:none">
-              <div class="field-group">
-                <label for="vb-header">Landing Page Header</label>
-                <input type="text" id="vb-header" maxlength="100" placeholder="Enter an alternative heading…" oninput="updatePreview(); updateCharCount('vb-header', 'cc-vb-header')">
-                <span class="char-count" id="cc-vb-header">100 remaining</span>
-              </div>
-              <div class="field-group">
-                <label for="vb-subtext">Landing Page Header Subtext</label>
-                <textarea id="vb-subtext" rows="5" maxlength="100" placeholder="Enter alternative subtext…" oninput="updatePreview(); updateCharCount('vb-subtext', 'cc-vb-subtext')"></textarea>
-                <span class="char-count" id="cc-vb-subtext">100 remaining</span>
-              </div>
-            </div>
-
-            <button class="btn-save" onclick="showSaveModal()">Save Changes</button>
+          <!-- Version A/B tab toggle -->
+          <div class="version-editor-tabs">
+            <button class="version-editor-tab active" id="vetab-a" onclick="setVersion('a')">
+              <span class="version-badge version-badge-a">Version A</span>
+              <span class="version-default-tag">Default</span>
+            </button>
+            <button class="version-editor-tab" id="vetab-b" onclick="setVersion('b')">
+              <span class="version-badge version-badge-b">Version B</span>
+            </button>
           </div>
 
-          <!-- RIGHT: preview -->
+          <!-- Preview (full width, clipped) -->
           <div class="preview-wrapper">
             <div class="preview-toolbar">
               <span class="preview-label">Landing Page Preview</span>
@@ -1002,7 +967,37 @@
           </div>
         </div>
           </div><!-- /preview-wrapper -->
-        </div><!-- /customization-layout -->
+
+          <!-- Version A fields (2-col) -->
+          <div class="version-fields" id="vfields-a">
+            <div class="field-group">
+              <label for="va-header">Landing Page Header</label>
+              <input type="text" id="va-header" value="Wealth is about experiencing life fully." maxlength="100" placeholder="Enter your main heading…" oninput="updatePreview(); updateCharCount('va-header', 'cc-va-header')">
+              <span class="char-count" id="cc-va-header">59 remaining</span>
+            </div>
+            <div class="field-group">
+              <label for="va-subtext">Landing Page Header Subtext</label>
+              <textarea id="va-subtext" rows="3" maxlength="100" placeholder="Enter supporting subtext…" oninput="updatePreview(); updateCharCount('va-subtext', 'cc-va-subtext')">Take a few minutes to get clear on what matters most and what your money is really for.</textarea>
+              <span class="char-count" id="cc-va-subtext">13 remaining</span>
+            </div>
+          </div>
+
+          <!-- Version B fields (2-col, hidden) -->
+          <div class="version-fields" id="vfields-b" style="display:none">
+            <div class="field-group">
+              <label for="vb-header">Landing Page Header</label>
+              <input type="text" id="vb-header" maxlength="100" placeholder="Enter an alternative heading…" oninput="updatePreview(); updateCharCount('vb-header', 'cc-vb-header')">
+              <span class="char-count" id="cc-vb-header">100 remaining</span>
+            </div>
+            <div class="field-group">
+              <label for="vb-subtext">Landing Page Header Subtext</label>
+              <textarea id="vb-subtext" rows="3" maxlength="100" placeholder="Enter alternative subtext…" oninput="updatePreview(); updateCharCount('vb-subtext', 'cc-vb-subtext')"></textarea>
+              <span class="char-count" id="cc-vb-subtext">100 remaining</span>
+            </div>
+          </div>
+
+          <button class="btn-save" onclick="showSaveModal()">Save Changes</button>
+        </div><!-- /customization-stack -->
 
       </section>
 
