@@ -679,9 +679,8 @@
     #preview-header:focus::after, #preview-subtext:focus::after {
       display: none;
     }
-    /* char counter shown below the active field, plain text */
+    /* char counter in the preview toolbar — never overlaps the page */
     .preview-char-badge {
-      position: fixed;
       color: #9ca3af;
       font-family: 'Poppins', sans-serif;
       font-size: 12px;
@@ -689,7 +688,6 @@
       pointer-events: none;
       opacity: 0;
       transition: opacity 0.18s;
-      z-index: 500;
       white-space: nowrap;
     }
     .preview-char-badge.visible { opacity: 1; }
@@ -969,6 +967,7 @@
           <div class="preview-wrapper">
             <div class="preview-toolbar">
               <span class="preview-label">Landing Page Preview</span>
+              <span id="preview-char-badge" class="preview-char-badge"></span>
             </div>
             <div class="preview-scale-outer">
             <div class="lp-preview" id="lp-preview" style="--lp-primary: #240446; --lp-accent: #7639A1;">
@@ -1020,7 +1019,6 @@
               </div>
             </div>
           </div>
-            <div id="preview-char-badge" class="preview-char-badge"></div>
           </div><!-- /preview-scale-outer -->
           </div><!-- /preview-wrapper -->
 
@@ -1461,15 +1459,16 @@
     function fitPreview() {
       const lp = document.getElementById('lp-preview');
       const outer = document.querySelector('.preview-scale-outer');
-      if (!lp || !outer || !outer.clientHeight) return;
+      if (!lp || !outer || !outer.clientWidth) return;
       const natW = 800;
       if (!lp.offsetHeight) return;
       _vHeights[_previewVersion] = lp.offsetHeight;
       const natH = Math.max(_vHeights.a, _vHeights.b, lp.offsetHeight);
-      const s = Math.min(outer.clientWidth / natW, outer.clientHeight / natH);
+      // fill the container width; the container height follows the scaled page
+      const s = outer.clientWidth / natW;
       lp.style.transform = 'scale(' + s + ')';
-      // center horizontally when narrower than the container
-      lp.style.left = Math.max(0, (outer.clientWidth - natW * s) / 2) + 'px';
+      lp.style.left = '0px';
+      outer.style.height = Math.ceil(natH * s) + 'px';
     }
     window.addEventListener('resize', fitPreview);
 
@@ -1498,14 +1497,9 @@
       const field = el.id === 'preview-header' ? 'header' : 'subtext';
       const max = FIELD_MAX[field];
       const len = el.textContent.length;
-      badge.textContent = len + '/' + max;
+      badge.textContent = (field === 'header' ? 'Header ' : 'Subtext ') + len + '/' + max;
       badge.classList.toggle('warn', len >= max * 0.85 && len < max);
       badge.classList.toggle('over', len >= max);
-      // just below the field, right-aligned with its right edge (viewport coords)
-      const r = el.getBoundingClientRect();
-      badge.style.top  = (r.bottom + 4) + 'px';
-      badge.style.left = 'auto';
-      badge.style.right = (window.innerWidth - r.right) + 'px';
     }
 
     function onPreviewInput(field) {
