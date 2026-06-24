@@ -1187,22 +1187,22 @@
           <h2>Branding</h2>
         </div>
 
-        <!-- Name (synced with General) -->
-        <div class="field-group">
-          <label for="brand-name">Name</label>
-          <input type="text" id="brand-name" value="Acme" placeholder="Organization name" oninput="syncBrandName(this.value)">
-        </div>
-
-        <!-- Logo upload -->
-        <div class="field-group">
-          <label>Logo</label>
-          <div class="logo-upload-wrap" onclick="document.getElementById('logo-file').click()">
-            <input type="file" id="logo-file" accept="image/*" style="display:none" onchange="handleLogoUpload(this)">
-            <div class="logo-placeholder" id="logo-placeholder">
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 13l4-4 3 3 2-2 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="1.5" y="1.5" width="15" height="15" rx="2" stroke="currentColor" stroke-width="1.5"/><circle cx="6" cy="6" r="1.5" fill="currentColor"/></svg>
-              <span>Click to upload logo</span>
+        <!-- Name + Logo side by side -->
+        <div style="display:flex; gap:32px; align-items:flex-end;">
+          <div class="field-group" style="flex:1; max-width:280px;">
+            <label for="brand-name">Name</label>
+            <input type="text" id="brand-name" value="Acme" placeholder="Organization name" oninput="syncBrandName(this.value)">
+          </div>
+          <div class="field-group">
+            <label>Logo</label>
+            <div class="logo-upload-wrap" onclick="document.getElementById('logo-file').click()">
+              <input type="file" id="logo-file" accept="image/*" style="display:none" onchange="handleLogoUpload(this)">
+              <div class="logo-placeholder" id="logo-placeholder">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 13l4-4 3 3 2-2 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="1.5" y="1.5" width="15" height="15" rx="2" stroke="currentColor" stroke-width="1.5"/><circle cx="6" cy="6" r="1.5" fill="currentColor"/></svg>
+                <span>Click to upload logo</span>
+              </div>
+              <img id="logo-preview-img" style="display:none">
             </div>
-            <img id="logo-preview-img" style="display:none">
           </div>
         </div>
 
@@ -1276,8 +1276,8 @@
                 </div>
                 <div class="lp-body">
                   <div class="lp-welcome">Welcome!</div>
-                  <div class="lp-header">Wealth is about experiencing life fully.</div>
-                  <div class="lp-subtext">Take a few minutes to get clear on what matters most and what your money is really for.</div>
+                  <div class="lp-header" id="preview-header-b">Wealth is about experiencing life fully.</div>
+                  <div class="lp-subtext" id="preview-subtext-b">Take a few minutes to get clear on what matters most and what your money is really for.</div>
                   <div class="lp-cards-label">What you'll get:</div>
                   <div class="lp-cards">
                     <div class="lp-card"><div class="lp-card-icon">⚡</div><div class="lp-card-title">Discover What Matters Most</div><div class="lp-card-desc">A quick, guided experience that clarifies your values, goals, and priorities.</div></div>
@@ -1572,6 +1572,17 @@
     }
     window.addEventListener('resize', fitPreview);
 
+    function fitPreviewB() {
+      const lp = document.getElementById('lp-preview-b');
+      const outer = lp && lp.closest('.preview-scale-outer');
+      if (!lp || !outer || !outer.clientWidth) return;
+      const s = outer.clientWidth / 800;
+      lp.style.transform = 'scale(' + s + ')';
+      lp.style.left = '0px';
+      outer.style.height = Math.ceil(lp.offsetHeight * s) + 'px';
+    }
+    window.addEventListener('resize', fitPreviewB);
+
     // measure both versions' page heights (swaps text invisibly within one frame)
     function _measureBothHeights() {
       const lp = document.getElementById('lp-preview');
@@ -1683,6 +1694,15 @@
         lp.style.setProperty('--lp-accent',  accent);
       });
 
+      // sync branding preview text from Version A
+      const hb = document.getElementById('preview-header-b');
+      const sb = document.getElementById('preview-subtext-b');
+      const vaH = document.getElementById('va-header');
+      const vaS = document.getElementById('va-subtext');
+      if (hb && vaH) hb.textContent = vaH.value;
+      if (sb && vaS) sb.textContent = vaS.value;
+      fitPreviewB();
+
       ['preview-org-name', 'preview-org-name-b'].forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
@@ -1754,7 +1774,7 @@
         const brandInput = document.getElementById('brand-name');
         if (brandInput && !brandInput._userEdited) brandInput.value = orgName;
         updatePreview();
-        setTimeout(fitPreview, 0);
+        setTimeout(() => { fitPreview(); fitPreviewB(); }, 0);
       }
     }
 
