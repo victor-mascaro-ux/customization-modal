@@ -295,7 +295,7 @@
       outline: none;
       transition: border-color 0.15s;
     }
-    .custom-key-fields input:first-child {
+    .custom-key-fields input:last-child {
       font-family: 'Courier New', monospace;
     }
     .custom-key-fields input:focus { border-color: var(--primary-70); }
@@ -974,7 +974,6 @@
           <input type="url" id="org-start-page" value="https://AcmeAdvisors.com/dashboard" placeholder="https://...">
         </div>
 
-        <button class="btn-save" onclick="showSaveModal()">Save Changes</button>
       </section>
 
       <!-- Site Customization Tab -->
@@ -1064,8 +1063,7 @@
           <input type="hidden" id="vb-header" value="Wealth is about experiencing life fully.">
           <input type="hidden" id="vb-subtext" value="Take a few minutes to get clear on what matters most and what your money is really for.">
 
-          <button class="btn-save" onclick="showSaveModal()">Save Changes</button>
-        </div><!-- /customization-stack -->
+          </div><!-- /customization-stack -->
 
       </section>
 
@@ -1151,8 +1149,8 @@
           </div>
           <div class="custom-key-group">
             <div class="custom-key-fields">
-              <input type="text" id="custom-key" placeholder="custom_key" onkeydown="if(event.key==='Enter')addCustomKey()">
               <input type="text" id="custom-key-desc" placeholder="Brief description (3–5 words)" onkeydown="if(event.key==='Enter')addCustomKey()">
+              <input type="text" id="custom-key" placeholder="custom_key" onkeydown="if(event.key==='Enter')addCustomKey()">
             </div>
             <button class="btn-add" onclick="addCustomKey()">Add</button>
           </div>
@@ -1160,7 +1158,6 @@
 
 
 
-        <button class="btn-save" onclick="showSaveModal()">Save Changes</button>
       </section>
 
       <!-- Access Tab -->
@@ -1180,7 +1177,6 @@
           </div>
         </div>
 
-        <button class="btn-save" onclick="showSaveModal()">Save Changes</button>
       </section>
 
       <!-- Branding Tab -->
@@ -1311,7 +1307,6 @@
           </div>
         </div>
 
-        <button class="btn-save" onclick="showSaveModal()">Save Changes</button>
       </section>
 
       <!-- Privacy & Compliance Tab -->
@@ -1327,7 +1322,6 @@
         </div>
 
 
-        <button class="btn-save" onclick="showSaveModal()">Save Changes</button>
       </section>
 
     </main>
@@ -1492,6 +1486,14 @@
       updateFontPreview();
       if (inputId === 'font-family') updateFontTypeList(value);
     }
+
+    // ── Auto-save on any field interaction ──
+    document.addEventListener('change', e => {
+      if (e.target.matches('input, select, textarea')) showSaveModal();
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && e.target.matches('input[type="text"], input[type="url"]')) showSaveModal();
+    });
 
     // ── Save toast ──
     let _toastTimer;
