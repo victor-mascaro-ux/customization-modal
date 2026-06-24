@@ -1709,20 +1709,24 @@
       if (sb && vaS) sb.textContent = vaS.value;
       fitPreviewB();
 
-      ['preview-org-name', 'preview-org-name-b'].forEach(id => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        el.textContent = orgName.toUpperCase();
-        if (!hideTm) {
-          const reg = document.createElement('span');
-          reg.className = 'org-reg';
-          reg.textContent = '®';
-          el.appendChild(reg);
-        }
-        el.style.fontFamily = `'${fontFamily}', 'Poppins', sans-serif`;
-        el.style.fontWeight = typeToWeight(fontType);
-        el.style.fontStyle  = /italic/i.test(fontType) ? 'italic' : 'normal';
-      });
+      if (_uploadedLogoSrc) {
+        applyOrgNameLogo();
+      } else {
+        ['preview-org-name', 'preview-org-name-b'].forEach(id => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          el.textContent = orgName.toUpperCase();
+          if (!hideTm) {
+            const reg = document.createElement('span');
+            reg.className = 'org-reg';
+            reg.textContent = '®';
+            el.appendChild(reg);
+          }
+          el.style.fontFamily = `'${fontFamily}', 'Poppins', sans-serif`;
+          el.style.fontWeight = typeToWeight(fontType);
+          el.style.fontStyle  = /italic/i.test(fontType) ? 'italic' : 'normal';
+        });
+      }
     }
 
     function syncBrandName(val) {
@@ -1731,27 +1735,35 @@
       updatePreview();
     }
 
+    let _uploadedLogoSrc = null;
+
     function handleLogoUpload(input) {
       if (!input.files || !input.files[0]) return;
       const reader = new FileReader();
       reader.onload = e => {
-        const src = e.target.result;
+        _uploadedLogoSrc = e.target.result;
 
         // Update upload area thumbnail
         const img = document.getElementById('logo-preview-img');
         const ph  = document.getElementById('logo-placeholder');
-        img.src = src;
+        img.src = _uploadedLogoSrc;
         img.style.display = 'block';
         ph.style.display  = 'none';
 
-        // Replace knomee SVG logo in both previews with uploaded image
-        ['preview-nav-logo', 'preview-nav-logo-b'].forEach(id => {
-          const wrap = document.getElementById(id);
-          if (!wrap) return;
-          wrap.innerHTML = `<img src="${src}" style="height:20px; max-width:120px; object-fit:contain; display:block;">`;
-        });
+        applyOrgNameLogo();
       };
       reader.readAsDataURL(input.files[0]);
+    }
+
+    function applyOrgNameLogo() {
+      if (!_uploadedLogoSrc) return;
+      const hideTm = document.getElementById('hide-trademark')?.checked;
+      const regHtml = hideTm ? '' : '<span class="org-reg">®</span>';
+      ['preview-org-name', 'preview-org-name-b'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.innerHTML = `<img src="${_uploadedLogoSrc}" style="height:22px; max-width:110px; object-fit:contain; display:inline-block; vertical-align:middle;">${regHtml}`;
+      });
     }
 
     function addTemplate() {
