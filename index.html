@@ -1340,6 +1340,8 @@
   </div>
 
   <script>
+    let _uploadedLogoSrc = null;
+
     // ── Google Fonts constants ──
     const WEIGHT_NAMES = {
       100: 'Thin', 200: 'Extra Light', 300: 'Light', 400: 'Regular',
@@ -1753,8 +1755,6 @@
       if (orgInput) { orgInput.value = val; updateSlug(val); }
       updatePreview();
     }
-
-    let _uploadedLogoSrc = null;
 
     function handleLogoUpload(input) {
       if (!input.files || !input.files[0]) return;
