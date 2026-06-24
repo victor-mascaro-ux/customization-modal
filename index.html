@@ -300,6 +300,7 @@
     }
     .custom-key-fields input:focus { border-color: var(--primary-70); }
     .custom-key-fields input::placeholder { font-family: 'Poppins', sans-serif; }
+    #custom-key::placeholder { font-family: 'Courier New', monospace; }
     .btn-add {
       display: flex;
       align-items: center;
@@ -1477,6 +1478,11 @@
     // ── Save toast ──
     let _toastTimer;
     function showSaveModal() {
+      // if on Marketing tab and there's a pending custom key, add it first
+      if (document.getElementById('tab-prospects').classList.contains('active')) {
+        const key = document.getElementById('custom-key').value.trim();
+        if (key) addCustomKey();
+      }
       const t = document.getElementById('save-toast');
       t.classList.add('visible');
       clearTimeout(_toastTimer);
