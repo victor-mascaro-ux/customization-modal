@@ -183,7 +183,7 @@
       flex-direction: column;
       gap: 6px;
     }
-    .field-group label {
+    .field-group > label:first-child {
       font-size: 14px;
       font-weight: 600;
       color: var(--primary-70);
@@ -362,7 +362,7 @@
     }
     .font-field { position: relative; }
     .font-field input {
-      width: 200px;
+      width: 100%;
       padding: 10px 14px;
       border: 1px solid var(--border);
       border-radius: 8px;
@@ -389,7 +389,7 @@
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 8px 12px;
-      width: 200px;
+      width: 100%;
       background: white;
     }
     .color-input-wrap:focus-within { border-color: var(--primary-70); }
@@ -1190,7 +1190,7 @@
         </div>
 
         <!-- Two-column grid -->
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px 32px; align-items:end;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px 24px; align-items:end;">
 
           <!-- Name -->
           <div class="field-group">
