@@ -1189,12 +1189,16 @@
           <h2>Branding</h2>
         </div>
 
-        <!-- Name + Logo side by side -->
-        <div style="display:flex; gap:32px; align-items:flex-end;">
-          <div class="field-group" style="flex:1; max-width:280px;">
+        <!-- Two-column grid: left col = Name+Colors+Fonts, right col = Logo+Colors+Fonts -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px 32px; align-items:start;">
+
+          <!-- Name -->
+          <div class="field-group">
             <label for="brand-name">Name</label>
             <input type="text" id="brand-name" value="Acme" placeholder="Organization name" oninput="syncBrandName(this.value)">
           </div>
+
+          <!-- Logo -->
           <div class="field-group">
             <label>Logo</label>
             <div class="logo-upload-wrap" onclick="document.getElementById('logo-file').click()">
@@ -1206,20 +1210,8 @@
               <img id="logo-preview-img" style="display:none">
             </div>
           </div>
-        </div>
 
-        <!-- Trademark -->
-        <div>
-          <p class="section-label">Registered Trademark</p>
-          <label class="checkbox-item">
-            <input type="checkbox" id="hide-trademark" onchange="updatePreview()">
-            Hide the &reg; mark next to the organization name
-          </label>
-          <p class="trademark-hint">When checked, the &reg; symbol is not displayed next to the org name in the header.</p>
-        </div>
-
-        <!-- Colors -->
-        <div class="color-row">
+          <!-- Primary Color -->
           <div class="color-field">
             <label>Primary Color</label>
             <div class="color-input-wrap">
@@ -1232,6 +1224,8 @@
               </div>
             </div>
           </div>
+
+          <!-- Accent Color -->
           <div class="color-field">
             <label>Accent Color</label>
             <div class="color-input-wrap">
@@ -1244,20 +1238,31 @@
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Fonts -->
-        <div class="font-row">
+          <!-- Font Family -->
           <div class="font-field">
             <label for="font-family">Font Family</label>
             <input type="text" id="font-family" value="Inter" placeholder="Search Google Fonts…" autocomplete="off" oninput="filterFontDropdown('font-family'); updateFontPreview()" onfocus="openFontDropdown('font-family')" onblur="closeFontDropdown('font-family')" style="font-family: Inter, Poppins, sans-serif; font-weight: 400; font-style: normal;">
             <div class="custom-dropdown" id="dd-font-family"></div>
           </div>
+
+          <!-- Font Type -->
           <div class="font-field">
             <label for="font-type">Font Type</label>
             <input type="text" id="font-type" value="Regular" placeholder="e.g. Regular, Bold…" autocomplete="off" oninput="filterFontDropdown('font-type'); updateFontPreview()" onfocus="openFontDropdown('font-type')" onblur="closeFontDropdown('font-type')" style="font-family: Inter, Poppins, sans-serif; font-weight: 400; font-style: normal;">
             <div class="custom-dropdown" id="dd-font-type"></div>
           </div>
+
+        </div>
+
+        <!-- Trademark -->
+        <div style="margin-top:8px;">
+          <p class="section-label">Registered Trademark</p>
+          <label class="checkbox-item">
+            <input type="checkbox" id="hide-trademark" onchange="updatePreview()">
+            Hide the &reg; mark next to the organization name
+          </label>
+          <p class="trademark-hint">When checked, the &reg; symbol is not displayed next to the org name in the header.</p>
         </div>
 
         <!-- Website Preview -->
